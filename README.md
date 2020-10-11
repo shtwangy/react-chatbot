@@ -15,7 +15,7 @@
 `<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />`  
 `<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />`
 
-## 03. Create Firebase project
+## Create Firebase project
 
 ### Install firebase-tools globally 
 `npm install -g firebase-tools`
@@ -32,7 +32,7 @@
 ### Deploy your React App to the site hosted by Firebase
 `firebase deploy` 
 
-## 10. Firebase
+## Firebase
 ### Create Cloud Functions API
 Import these packages and initialize Firebase app
 `import * as functions from 'firebase-functions';
