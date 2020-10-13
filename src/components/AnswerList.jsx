@@ -1,7 +1,7 @@
 import React from 'react';
 import {Answer} from "./index";
 
-const AnswersList = (props) => {
+const AnswerList = (props) => {
     return (
         <div className="c-grid__answer">
             {props.answers.map((value, index) => {
@@ -13,4 +13,4 @@ const AnswersList = (props) => {
     );
 };
 
-export default AnswersList;
+export default AnswerList;
