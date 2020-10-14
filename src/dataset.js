@@ -5,7 +5,7 @@ const defaultDataset = {
             {content: "リペアを依頼したい", nextId: "repair"},
             {content: "電話で相談したい", nextId: "tel"}
         ],
-        question: "こんにちは！Magic Guitar Storeへようこそ🎸ご用件はなんですか？",
+        question: "こんにちは！Magic Tone Guitarsへようこそ🎸ご用件はなんですか？",
     },
     "sell": {
         answers: [
