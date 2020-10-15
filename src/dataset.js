@@ -3,7 +3,8 @@ const defaultDataset = {
         answers: [
             {content: "買取を依頼したい", nextId: "sell"},
             {content: "リペアを依頼したい", nextId: "repair"},
-            {content: "電話で相談したい", nextId: "tel"}
+            {content: "電話で相談したい", nextId: "tel"},
+            {content: "楽器を探したい", nextId: "https://www.digimart.net/"}
         ],
         question: "こんにちは！Magic Tone Guitarsへようこそ🎸ご用件はなんですか？",
     },
