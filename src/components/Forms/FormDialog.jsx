@@ -35,6 +35,28 @@ export default class FormDialog extends React.Component {
         const name = this.state.name;
         const email = this.state.email;
         const description = this.state.description;
+
+        const payload = {
+            text: '問い合わせがありました\n'
+                + 'お名前：' + name + '\n'
+                + 'メールアドレス：' + email + '\n'
+                + '問い合わせ内容：\n' + description
+        }
+
+        const url = '';
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        }).then(() => {
+            alert('送信が完了しました。追ってご連絡します！');
+            this.setState({
+                name: "",
+                email: "",
+                description: ""
+            });
+            return this.props.handleClose();
+        });
     }
 
     render() {
