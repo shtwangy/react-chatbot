@@ -1,109 +1,91 @@
-import React from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import './assets/styles/style.css';
 import {AnswerList, Chats, FormDialog} from "./components";
 import {db} from "./firebase";
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      answers: [],
-      chats: [],
-      currentId: "init",
-      dataset: {},
-      open: false
+const App = () => {
+    const [answers, setAnswers] = useState([]);
+    const [chats, setChats] = useState([]);
+    const [currentId, setCurrentId] = useState('init');
+    const [dataset, setDataset] = useState({});
+    const [open, setOpen] = useState(false);
+
+    const displayNextQuestion = (nextQuestionId, nextDataset) => {
+        addChats({
+            text: nextDataset.question,
+            type: 'question'
+        });
+        setAnswers(nextDataset.answers);
+        setCurrentId(nextQuestionId);
     };
-    this.selectAnswer = this.selectAnswer.bind(this);
-    this.handleClickOpen = this.handleClickOpen.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-  }
 
-  displayNextQuestion = (nextQuestionId) => {
-    const chats = this.state.chats;
-    chats.push({
-      text: this.state.dataset[nextQuestionId].question,
-      type: 'question'
+    const selectAnswer = (selectedAnswer, nextQuestionId) => {
+        switch(true) {
+            case (nextQuestionId === 'contact'):
+                handleClickOpen();
+                break;
+            case (/^https:*/.test(nextQuestionId)):
+                const a = document.createElement('a');
+                a.href = nextQuestionId;
+                a.target = '_blank';
+                a.click();
+                break;
+            default:
+                addChats({
+                    text: selectedAnswer,
+                    type: 'answer'
+                });
+                setTimeout(() => displayNextQuestion(nextQuestionId, dataset[nextQuestionId]), 1000);
+                break;
+        }
+    };
+
+    const addChats = (chat) => {
+        setChats(prevChats => {
+            return [...prevChats, chat];
+        });
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+        }, [setOpen]);
+
+    useEffect(() => {
+        (async() => {
+            const initDataset = {};
+            await db.collection('questions').get()
+                .then(snapshots => {
+                    snapshots.forEach(doc => {
+                        const id = doc.id;
+                        const data = doc.data();
+                        initDataset[id] = data;
+                    });
+                });
+            setDataset(initDataset);
+            displayNextQuestion(currentId, initDataset[currentId]);
+        }) ();
+        }, []);
+
+    useEffect(() => {
+        const scrollArea = document.getElementById('scroll-area');
+        if (scrollArea) {
+            scrollArea.scrollTop = scrollArea.scrollHeight;
+        }
     });
-    this.setState({
-      answers: this.state.dataset[nextQuestionId].answers,
-      chats: chats,
-      currentId: nextQuestionId
-    })
-  }
 
-  selectAnswer = (selectedAnswer, nextQuestionId) => {
-    switch(true) {
-      case (nextQuestionId === 'init'):
-        setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
-        break;
-      case (nextQuestionId === 'contact'):
-        this.handleClickOpen();
-        break;
-      case (/^https:*/.test(nextQuestionId)):
-        const a = document.createElement('a');
-        a.href = nextQuestionId;
-        a.target = '_blank';
-        a.click();
-        break;
-      default:
-        const chats = this.state.chats;
-        chats.push({
-          text: selectedAnswer,
-          type: 'answer'
-        });
-        this.setState({
-          chats: chats
-        });
-        setTimeout(() => this.displayNextQuestion(nextQuestionId), 1000);
-        break;
-    }
-  }
-
-  handleClickOpen = () => {
-    this.setState({open: true});
-  }
-
-  handleClose = () => {
-    this.setState({open: false});
-  }
-
-  initDataset = (dataset) => {
-    this.setState({dataset: dataset})
-  }
-
-  componentDidMount() {
-    (async() => {
-      const dataset = this.state.dataset;
-      await db.collection('questions').get()
-          .then(snapshots => {
-            snapshots.forEach(doc => {
-              const id = doc.id;
-              const data = doc.data();
-              dataset[id] = data;
-            });
-          });
-      this.initDataset(dataset);
-      const initAnswer = '';
-      this.selectAnswer(initAnswer, this.state.currentId);
-    }) ();
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-      const scrollArea = document.getElementById('scroll-area');
-      if (scrollArea) {
-          scrollArea.scrollTop = scrollArea.scrollHeight;
-      }
-  }
-
-  render() {
     return (
         <section className="c-section">
-          <div className="c-box">
-            <Chats chats={this.state.chats}/>
-            <AnswerList answers={this.state.answers} select={this.selectAnswer} />
-            <FormDialog open={this.state.open} handleClose={this.handleClose}/>
-          </div>
+            <div className="c-box">
+                <Chats chats={chats} />
+                <AnswerList answers={answers} select={selectAnswer} />
+                <FormDialog open={open} handleClose={handleClose} />
+            </div>
         </section>
     );
-  }
 }
+
+export default App;
