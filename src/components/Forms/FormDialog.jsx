@@ -23,7 +23,32 @@ const FormDialog = (props) => {
         setDescription(event.target.value);
     }
 
+    const validateRequiredInput = (...args) => {
+        let isBlank = false;
+        args.forEach(arg => {
+            if (arg === '') {
+                isBlank = true;
+            }
+        });
+        return isBlank;
+    };
+
+    const validateEmailFormat = (email) => {
+        const regex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        return regex.test(email);
+    }
+
     const submitForm = () => {
+        if (validateRequiredInput(name, email, description)) {
+            alert('必須入力欄が空白です。')
+            return false;
+        }
+
+        if (!validateEmailFormat(email)) {
+            alert('メールアドレスが不正です。')
+            return false;
+        }
+
         const payload = {
             text: '問い合わせがありました\n'
                 + 'お名前：' + name + '\n'
